@@ -1,0 +1,62 @@
+#pragma GCC optimize("O3,unroll-loops")
+#include <bits/stdc++.h>
+#define fastIO ios_base::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+#define RED "\e[1;31m"
+#define RESET "\e[0m"
+#define int long long
+#define lc 2*id
+#define rc 2*id+1
+
+using namespace std;
+
+void debug()
+{
+    cerr << "\n" << RESET;
+}
+template<class T,class ...U> void debug(T a,U ...b)
+{
+    cerr << RED << a << " ", debug(b...);
+}
+
+int a[200001],seg[800001];
+
+void build(int L,int R,int id)
+{
+    if(L==R)
+    {
+        seg[id]=a[L];
+        return;
+    }
+    int M=(L+R)/2;
+    build(L,M,lc);
+    build(M+1,R,rc);
+    seg[id]=min(seg[lc],seg[rc]);
+}
+
+int query(int l,int r,int L,int R,int id)
+{
+    if(l<=L&&R<=r)
+        return seg[id];
+    int M=(L+R)/2;
+    if(r<=M)
+        return query(l,r,L,M,lc);
+    else if(l>M)
+        return query(l,r,M+1,R,rc);
+    else
+        return min(query(l,r,L,M,lc),query(l,r,M+1,R,rc));
+}
+
+signed main()
+{
+    fastIO
+    int n,q,i,l,r;
+    cin >> n >> q;
+    for(i=0;i<n;i++)
+        cin >> a[i];
+    build(0,n-1,1);
+    while(q--)
+    {
+        cin >> l >> r;
+        cout << query(l-1,r-1,0,n-1,1) << "\n";
+    }
+}
