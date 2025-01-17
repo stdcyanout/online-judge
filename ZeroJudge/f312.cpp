@@ -1,32 +1,22 @@
-#pragma GCC optimize("O3,unroll-loops")
 #include <bits/stdc++.h>
-#define fastIO ios_base::sync_with_stdio(false),cin.tie(0),cout.tie(0);
-#define RED "\e[1;31m"
-#define RESET "\e[0m"
-#define int long long
-
 using namespace std;
-
-void debug()
+int main()
 {
-    cerr << "\n" << RESET;
-}
-template<class T,class ...U> void debug(T a,U ...b)
-{
-    cerr << RED << a << " ", debug(b...);
-}
-
-int calc(int a,int b,int c,int x)
-{
-    return a*x*x+b*x+c;
-}
-
-signed main()
-{
-    fastIO
-    int a1,b1,c1,a2,b2,c2,n,i,maxearn=LONG_LONG_MIN;
-    cin >> a1 >> b1 >> c1 >> a2 >> b2 >> c2 >> n;
-    for(i=0;i<=n;i++)
-        maxearn=max(maxearn,calc(a1,b1,c1,i)+calc(a2,b2,c2,n-i));
-    cout << maxearn << "\n";
+    int a1, b1, c1, a2, b2, c2, n;
+	cin >> a1 >> b1 >> c1 >> a2 >> b2 >> c2 >> n;
+	if(a1 + a2 >= 0)
+    {
+        int r1 = a1 * n * n + b1 * n + c1 + c2; // x1 = n
+        int r2 = a2 * n * n + b2 * n + c1 + c2; // x1 = 0
+        if(r1 > r2) r2 = r1;
+        cout << r2 << "\n";
+    }
+    else
+    {
+        double x = 1.0 * (2 * a2 * n - b1 + b2) / (2 * a1 + 2 * a2);
+        int p = round(x);
+        if(p < 0) p = 0;
+        if(p > n) p = n;
+        cout << (a1 + a2) * p * p + (b1 - b2 - 2 * a2 * n) * p + a2 * n * n + b2 * n + c1 + c2 << "\n";
+    }
 }

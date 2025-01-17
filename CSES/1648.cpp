@@ -1,64 +1,144 @@
+#pragma GCC optimize("O3,unroll-loops")
 #include <bits/stdc++.h>
-#define int long long
-#define lc 2*id+1
-#define rc 2*id+2
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#define fastio ios_base::sync_with_stdio(false),cin.tie(0);
+#define safe cerr << "\e[1;31m" << __PRETTY_FUNCTION__ << " line " << __LINE__ << " safe\e[0m\n";
+#define int int64_t
+#define pii pair<int,int>
+#define F first
+#define S second
+#define mp make_pair
+#define pb emplace_back
+#define rep(i,n) for(i=0;i<(n);++i)
+#define foo(i,a,b) for(i=(a);i<=(b);++i)
+#define oof(i,a,b) for(i=(a);i>=(b);--i)
+#define all(x) begin(x),end(x)
+#define btw(a,b,c) ((a)<=(b)&&(b)<=(c))
+#define lowbit(x) (x&-x)
+using namespace __gnu_pbds;
 using namespace std;
+typedef tree<int,null_type,less<int>,rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+typedef tree<int,null_type,less_equal<int>,rb_tree_tag, tree_order_statistics_node_update> ordered_multiset;
 
-int a[200001],seg[400001];
-
-void build(int L,int R,int id)
+template <class ...T> void debug(T ...args)
 {
-    if(L==R)
+    int cnt = sizeof...(T);
+    ((cerr << "\e[1;31m"), ..., (cerr << args << (--cnt ? " " : "\e[0m\n")));
+}
+template <class T> void orange(T L, T R)
+{
+    cerr << "\e[1;31m";
+    for (int f = 0; L != R; ++L) cerr << (f++ ? " " : "") << *L;
+    cerr << "\e[0m\n";
+}
+/*
+int n,arr[200001],bit[200001];
+
+void init()
+{
+    int i,p;
+    foo(i,1,n)
     {
-        seg[id]=a[L];
-        return;
+        bit[i]+=arr[i];
+        p=i+lowbit(i);
+        if(p<=n) bit[p]+=bit[i];
     }
-    int M=(L+R)/2;
-    build(L,M,lc);
-    build(M+1,R,rc);
-    seg[id]=seg[lc]+seg[rc];
 }
 
-int query(int l,int r,int L,int R,int id)
+void update(int k,int u)
 {
-    if(l<=L&&R<=r)
-        return seg[id];
-    int M=(L+R)/2;
-    if(r<=M)
-        return query(l,r,L,M,lc);
-    if(l>=M+1)
-        return query(l,r,M+1,R,rc);
-    return query(l,r,L,M,lc)+query(l,r,M+1,R,rc);
+    for(int i=k;i<=n;i+=lowbit(i))
+        bit[i]+=u-arr[k];
+    arr[k]=u;
 }
 
-void update(int k,int u,int L,int R,int id)
+int query(int a,int b)
 {
-    if(L==R)
-    {
-        seg[id]=u;
-        return;
-    }
-    int M=(L+R)/2;
-    if(k<=M)
-        update(k,u,L,M,lc);
-    else
-        update(k,u,M+1,R,rc);
-    seg[id]=seg[lc]+seg[rc];
+    int i,sum=0;
+    for(i=b;i>0;i-=lowbit(i))
+        sum+=bit[i];
+    for(i=a-1;i>0;i-=lowbit(i))
+        sum-=bit[i];
+    return sum;
 }
 
 signed main()
 {
-    int n,q,i,s,t,u;
+    fastio;
+    int q,opt,a,b,i;
     cin >> n >> q;
-    for(i=0;i<n;i++)
-        cin >> a[i];
-    build(0,n-1,0);
+    foo(i,1,n) cin >> arr[i];
+    init();
     while(q--)
     {
-        cin >> s >> t >> u;
-        if(s==1)
-            update(t-1,u,0,n-1,0);
-        if(s==2)
-            cout << query(t-1,u-1,0,n-1,0) << "\n";
+        cin >> opt >> a >> b;
+        if(opt==1)
+            update(a,b);
+        else
+            cout << query(a,b) << "\n";
+    }
+}
+*/
+
+int arr[200001];
+
+struct node
+{
+    int val;
+    node *L, *R;
+    node(int v = 0) : val(v) {}
+    void pull() { val = L -> val + R -> val; }
+    node(node *L, node *R) : L(L), R(R) { pull(); }
+};
+
+node* build(int L, int R)
+{
+    if(L == R - 1)
+        return new node(arr[L]);
+    int M = (L + R) / 2;
+    return new node(build(L, M), build(M, R));
+}
+
+void update(node* tree, int L, int R, int pos, int val)
+{
+    if(L == R - 1)
+    {
+        tree -> val = val;
+        return;
+    }
+    int M = (L + R) / 2;
+    if(pos < M)
+        update(tree -> L, L, M, pos, val);
+    else
+        update(tree -> R, M, R, pos, val);
+    tree -> pull();
+}
+
+int query(node* tree, int L, int R, int l, int r)
+{
+    if(R <= l || r <= L)
+        return 0;
+    if(l <= L && R <= r)
+        return tree -> val;
+    int M = (L + R) / 2;
+    return query(tree -> L, L, M, l, r) + query(tree -> R, M, R, l, r);
+}
+
+signed main()
+{
+    fastio;
+    int n, q, i, t, a, b;
+    cin >> n >> q;
+    rep(i, n)
+        cin >> arr[i];
+    node* tree = build(0, n);
+    while(q--)
+    {
+        cin >> t >> a >> b;
+        if(t == 1)
+            update(tree, 0, n, a - 1, b);
+        else
+            cout << query(tree, 0, n, a - 1, b) << "\n";
     }
 }

@@ -1,42 +1,59 @@
 #pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 #include <bits/stdc++.h>
-#define quick ios_base::sync_with_stdio(false);cin.tie(0);cout.tie(0);
-
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#define fastio ios_base::sync_with_stdio(false),cin.tie(0);
+#define safe cerr << "\e[1;31m" << __PRETTY_FUNCTION__ << " line " << __LINE__ << " safe\e[0m\n";
+#define int int64_t
+#define pii pair<int,int>
+#define F first
+#define S second
+#define mp make_pair
+#define pb emplace_back
+#define rep(i,n) for(i=0;i<(n);++i)
+#define foo(i,a,b) for(i=(a);i<=(b);++i)
+#define oof(i,a,b) for(i=(a);i>=(b);--i)
+#define all(x) begin(x),end(x)
+#define btw(a,b,c) ((a)<=(b)&&(b)<=(c))
+using namespace __gnu_pbds;
 using namespace std;
+typedef tree<int,null_type,less<int>,rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+typedef tree<int,null_type,less_equal<int>,rb_tree_tag, tree_order_statistics_node_update> ordered_multiset;
 
-vector<string> gray_code(int n)
+template <class ...T> void debug(T ...args)
 {
-    if(n==1)
-    {
-        vector<string> v={"0","1"};
-        return v;
-    }
-    int i;
-    vector<string> v,vprime;
-    v=gray_code(n-1);
-    vprime=v;
-    reverse(vprime.begin(),vprime.end());
-    for(i=0;i<v.size();i++)
-    {
-        v[i]+="0";
-    }
-    for(i=0;i<vprime.size();i++)
-    {
-        vprime[i]+="1";
-    }
-    v.insert(v.end(),vprime.begin(),vprime.end());
-    return v;
+    int cnt = sizeof...(T);
+    ((cerr << "\e[1;31m"), ..., (cerr << args << (--cnt ? " " : "\e[0m\n")));
+}
+template <class T> void orange(T L, T R)
+{
+    cerr << "\e[1;31m";
+    for (int f = 0; L != R; ++L) cerr << (f++ ? " " : "") << *L;
+    cerr << "\e[0m\n";
 }
 
-int main()
+string s;
+
+void solve(int n)
 {
-    quick
-    int n;
+    if(n == 0)
+        return;
+    solve(n - 1);
+    if(s[n - 1] == '0')
+        s[n - 1] = '1';
+    else
+        s[n - 1] = '0';
+    cout << s << "\n";
+    solve(n - 1);
+}
+
+signed main()
+{
+    fastio;
+    int n, i;
     cin >> n;
-    vector<string> ans=gray_code(n);
-    for(string s:ans)
-    {
-        cout << s << "\n";
-    }
+    rep(i, n)
+        s += '0';
+    cout << s << "\n";
+    solve(n);
 }

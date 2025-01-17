@@ -1,0 +1,76 @@
+#pragma GCC optimize("O3,unroll-loops")
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#define fastio ios_base::sync_with_stdio(false),cin.tie(0);
+#define safe cerr << "\e[1;31m" << __PRETTY_FUNCTION__ << " line " << __LINE__ << " safe\e[0m\n";
+#define int int64_t
+#define pii pair<int,int>
+#define F first
+#define S second
+#define mp make_pair
+#define pb emplace_back
+#define rep(i,n) for(i=0;i<(n);++i)
+#define foo(i,a,b) for(i=(a);i<=(b);++i)
+#define oof(i,a,b) for(i=(a);i>=(b);--i)
+#define all(x) begin(x),end(x)
+#define btw(a,b,c) ((a)<=(b)&&(b)<=(c))
+using namespace __gnu_pbds;
+using namespace std;
+typedef tree<int,null_type,less<int>,rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+typedef tree<int,null_type,less_equal<int>,rb_tree_tag, tree_order_statistics_node_update> ordered_multiset;
+
+template <class ...T> void debug(T ...args)
+{
+    int cnt = sizeof...(T);
+    ((cerr << "\e[1;31m"), ..., (cerr << args << (--cnt ? " " : "\e[0m\n")));
+}
+template <class T> void orange(T L, T R)
+{
+    cerr << "\e[1;31m";
+    for (int f = 0; L != R; ++L) cerr << (f++ ? " " : "") << *L;
+    cerr << "\e[0m\n";
+}
+
+vector<int> graph[200001];
+int anc[200001][20], dep[200001];
+
+void dfs(int n)
+{
+    dep[n] = dep[anc[n][0]] + 1;
+    int i;
+    foo(i, 1, 18) anc[n][i] = anc[anc[n][i - 1]][i - 1];
+    for(int t : graph[n])
+        dfs(t);
+}
+
+signed main()
+{
+    fastio;
+    int n, q, i, a, b;
+    cin >> n >> q;
+    foo(i, 2, n)
+    {
+        cin >> anc[i][0];
+        graph[anc[i][0]].pb(i);
+    }
+    anc[1][0] = 1;
+    dfs(1);
+    while(q--)
+    {
+        cin >> a >> b;
+        if(dep[a] < dep[b])
+            swap(a, b);
+        int tmp = dep[a] - dep[b];
+        for(i = 0; tmp; i++, tmp >>= 1)
+            if(tmp & 1) a = anc[a][i];
+        if(a == b) cout << a << "\n";
+        else
+        {
+            oof(i, 18, 0)
+                if(anc[a][i] != anc[b][i])
+                    a = anc[a][i], b = anc[b][i];
+            cout << anc[a][0] << "\n";
+        }
+    }
+}

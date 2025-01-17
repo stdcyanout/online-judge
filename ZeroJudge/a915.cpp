@@ -1,39 +1,27 @@
-#pragma GCC optimize("O3,unroll-loops")
-#include <bits/stdc++.h>
-#define fastIO ios_base::sync_with_stdio(false),cin.tie(0),cout.tie(0);
-#define RED "\e[1;31m"
-#define RESET "\e[0m"
-#define int long long
-#define pii pair<int,int>
-#define F first
-#define S second
-
+#include <iostream>
+#include <algorithm>
 using namespace std;
 
-void debug()
+struct p
 {
-    cerr << "\n" << RESET;
-}
-template<class T,class ...U> void debug(T a,U ...b)
+    int x;
+    int y;
+} a[1000];
+
+bool cmp(p a,p b)
 {
-    cerr << RED << a << " ", debug(b...);
+    if(a.x==b.x)
+        return a.y<b.y;
+    return a.x<b.x;
 }
 
-vector<pii> v;
-
-signed main()
+int main()
 {
-    fastIO
-    int n;
+    int n,i;
     cin >> n;
-    vector<pii> v(n);
-    while(n--)
-    {
-        cin >> v[n].F >> v[n].S;
-    }
-    sort(v.begin(),v.end());
-    for(pii p:v)
-    {
-        cout << p.F << " " << p.S << "\n";
-    }
+    for(i=0;i<n;i++)
+        cin >> a[i].x >> a[i].y;
+    sort(a,a+n,cmp);
+    for(i=0;i<n;i++)
+        cout << a[i].x << " " << a[i].y << "\n";
 }
